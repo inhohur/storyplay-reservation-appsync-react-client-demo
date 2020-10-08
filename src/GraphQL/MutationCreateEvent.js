@@ -1,22 +1,12 @@
 import gql from "graphql-tag";
 
 export default gql(`
-mutation($name: String! $when: String! $where: String! $description: String!) {
-  createEvent(
-    name: $name
-    when: $when
-    where: $where
-    description: $description
+mutation($phone: String! $device: String!) {
+  save(
+    phone: $phone
+    device: $device
   ) {
-    id
-    name
-    where
-    when
-    description
-    comments {
-      items {
-        commentId
-      }
-    }
+    phone
+    device
   }
 }`);

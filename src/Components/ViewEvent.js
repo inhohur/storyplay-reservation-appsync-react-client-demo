@@ -2,10 +2,7 @@ import React, { Component } from "react";
 import { graphql } from "react-apollo";
 import { Link } from "react-router-dom";
 
-import moment from 'moment';
-
 import QueryGetEvent from "../GraphQL/QueryGetEvent";
-import EventComments from "./EventComments";
 
 class ViewEvent extends Component {
 
@@ -18,14 +15,8 @@ class ViewEvent extends Component {
                 <div className="ui items">
                     <div className="item">
                         {event && <div className="content">
-                            <div className="header">{event.name}</div>
-                            <div className="extra"><i className="icon calendar"></i>{moment(event.when).format('LL')}</div>
-                            <div className="extra"><i className="icon clock"></i>{moment(event.when).format('LT')}</div>
-                            <div className="extra"><i className="icon marker"></i>{event.where}</div>
-                            <div className="description">{event.description}</div>
-                            <div className="extra">
-                                <EventComments eventId={event.id} comments={event.comments} />
-                            </div>
+                            <div className="header">{event.phone}</div>
+                            <div className="description">{event.device}</div>
                         </div>}
                     </div>
                 </div>

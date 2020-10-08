@@ -7,12 +7,6 @@ import QueryAllEvents from "../GraphQL/QueryAllEvents";
 import QueryGetEvent from "../GraphQL/QueryGetEvent";
 import MutationCreateEvent from "../GraphQL/MutationCreateEvent";
 
-import DatePicker from 'react-datepicker';
-import moment from 'moment';
-
-import { nearest15min } from "../Utils";
-import DateTimePickerCustomInput from "./DateTimePickerCustomInput";
-
 class NewEvent extends Component {
 
     static defaultProps = {
@@ -21,10 +15,8 @@ class NewEvent extends Component {
 
     state = {
         event: {
-            name: '',
-            when: nearest15min().format(),
-            where: '',
-            description: '',
+            phone: '',
+            device: '',
         }
     };
 
@@ -60,35 +52,12 @@ class NewEvent extends Component {
                 <h1 className="ui header">Create an event</h1>
                 <div className="ui form">
                     <div className="field required eight wide">
-                        <label htmlFor="name">Name</label>
-                        <input type="text" id="name" value={event.name} onChange={this.handleChange.bind(this, 'name')} />
+                        <label htmlFor="phone">Phone</label>
+                        <input type="text" id="phone" value={event.phone} onChange={this.handleChange.bind(this, 'phone')} />
                     </div>
                     <div className="field required eight wide">
-                        <label htmlFor="when">When</label>
-                        <DatePicker
-                            className="ui container"
-                            customInput={<DateTimePickerCustomInput />}
-                            id="when"
-                            selected={moment(event.when)}
-                            onChange={this.handleDateChange.bind(this, 'when')}
-                            peekNextMonth
-                            showMonthDropdown
-                            showYearDropdown
-                            dropdownMode="select"
-                            showTimeSelect
-                            timeFormat="hh:mm a"
-                            timeIntervals={15}
-                            dateFormat="LL LT"
-                        />
-                    </div>
-                    <div className="field required eight wide">
-                        <label htmlFor="where">Where</label>
-                        <input type="text" id="where" value={event.where} onChange={this.handleChange.bind(this, 'where')} />
-                    </div>
-                    <div className="field required eight wide">
-                        <label htmlFor="description">Description</label>
-                        <textarea name="description" id="description" rows="10" value={event.description}
-                            onChange={this.handleChange.bind(this, 'description')}></textarea>
+                        <label htmlFor="device">Device</label>
+                        <input type="text" id="device" value={event.device} onChange={this.handleChange.bind(this, 'device')} />
                     </div>
                     <div className="ui buttons">
                         <Link to="/" className="ui button">Cancel</Link>
@@ -106,20 +75,20 @@ export default graphql(
     MutationCreateEvent,
     {
         props: (props) => ({
-            createEvent: (event) => {
+            save: (event) => {
                 return props.mutate({
                     update: (proxy, { data: { createEvent } }) => {
                         // Update QueryAllEvents
                         const query = QueryAllEvents;
                         const data = proxy.readQuery({ query });
 
-                        data.listEvents.items = [...data.listEvents.items.filter(e => e.id !== createEvent.id), createEvent];
+                        data.all.items = [...data.all.items.filter(e => e.phone !== createEvent.phone), createEvent];
 
                         proxy.writeQuery({ query, data });
 
                         // Create cache entry for QueryGetEvent
                         const query2 = QueryGetEvent;
-                        const variables = { id: createEvent.id };
+                        const variables = { id: createEvent.phone };
                         const data2 = { getEvent: { ...createEvent } };
 
                         proxy.writeQuery({ query: query2, variables, data: data2 });
