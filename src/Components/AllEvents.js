@@ -108,18 +108,20 @@ export default withApollo(compose(
                     const query = QueryAllEvents;
                     const data = proxy.readQuery({ query });
 
-                    data.all.items = data.all.items.filter(event => event.phone !== deleteEvent.phone);
+                    console.log("update --- " + JSON.stringify(deleteEvent));
+                    data.all.items = data.all.items.filter(e => e.phone !== deleteEvent.phone);
 
                     proxy.writeQuery({ query, data });
                 }
             },
             props: (props) => ({
                 deleteEvent: (event) => {
+                    console.log("deleteEvent --- " + JSON.stringify(event));
                     return props.mutate({
                         variables: { phone: event.phone },
                         optimisticResponse: () => ({
                             deleteEvent: {
-                                ...event, __typename: 'Event', comments: { __typename: 'CommentConnection', items: [] }
+                                ...event, __typename: 'Event', phone: event.phone
                             }
                         }),
                     });

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-import { v4 as uuid } from "uuid";
 import { graphql } from "react-apollo";
 import QueryAllEvents from "../GraphQL/QueryAllEvents";
 import QueryGetEvent from "../GraphQL/QueryGetEvent";
@@ -39,6 +38,7 @@ class NewEvent extends Component {
         const { createEvent, history } = this.props;
         const { event } = this.state;
 
+        console.log('handleSave : ' + JSON.stringify(event));
         await createEvent({ ...event });
 
         history.push('/');
@@ -75,20 +75,22 @@ export default graphql(
     MutationCreateEvent,
     {
         props: (props) => ({
-            save: (event) => {
+            createEvent: (event) => {
+                console.log('save event : ' + JSON.stringify(event))
                 return props.mutate({
                     update: (proxy, { data: { createEvent } }) => {
                         // Update QueryAllEvents
                         const query = QueryAllEvents;
                         const data = proxy.readQuery({ query });
 
+                        console.log('save event 2 : ' + JSON.stringify(createEvent));
                         data.all.items = [...data.all.items.filter(e => e.phone !== createEvent.phone), createEvent];
 
                         proxy.writeQuery({ query, data });
 
                         // Create cache entry for QueryGetEvent
                         const query2 = QueryGetEvent;
-                        const variables = { id: createEvent.phone };
+                        const variables = { phone: createEvent.phone };
                         const data2 = { getEvent: { ...createEvent } };
 
                         proxy.writeQuery({ query: query2, variables, data: data2 });
@@ -96,7 +98,7 @@ export default graphql(
                     variables: event,
                     optimisticResponse: () => ({
                         createEvent: {
-                            ...event, id: uuid(), __typename: 'Event', comments: { __typename: 'CommentConnection', items: [] }
+                            ...event, phone: event.phone, device: event.device
                         }
                     }),
                 })
